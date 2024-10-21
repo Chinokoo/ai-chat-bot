@@ -1,0 +1,25 @@
+name: ai_chat_app
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  dash_chat_2: ^0.0.21
+  flutter:
+    sdk: flutter
+  flutter_dotenv: ^5.1.0
+  flutter_gemini: ^2.0.5
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
