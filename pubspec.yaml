@@ -13,6 +13,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   flutter_gemini: ^2.0.5
   image_picker: ^1.1.2
+  internet_connectivity_checker: ^1.0.2
 
 dev_dependencies:
   flutter_test:

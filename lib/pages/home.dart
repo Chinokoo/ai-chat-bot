@@ -5,6 +5,7 @@ import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,7 +42,45 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-      body: _chatUI(),
+      body: ConnectivityBuilder(
+          interval: const Duration(seconds: 5),
+          builder: (ConnectivityStatus status) {
+            if (status == ConnectivityStatus.online) {
+              return _chatUI();
+            } else if (status == ConnectivityStatus.offline) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.wifi_off,
+                      color: Colors.green,
+                      size: 80,
+                    ),
+                    Text(
+                      "Offline",
+                      style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    )
+                  ],
+                ),
+              );
+            } else {
+              //connectivity status is checking
+              return const Center(
+                child: SizedBox(
+                  width: 25,
+                  height: 25,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.green,
+                  ),
+                ),
+              );
+            }
+          }),
     );
   }
 
@@ -59,7 +98,7 @@ class _HomePageState extends State<HomePage> {
               currentUserTimeTextColor: Colors.green,
               currentUserContainerColor: Colors.green),
           inputOptions: InputOptions(
-              inputTextStyle: TextStyle(color: Colors.green),
+              inputTextStyle: const TextStyle(color: Colors.green),
               sendOnEnter: true,
               trailing: [
                 IconButton(
@@ -104,6 +143,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  //function to send a message
   void sendTextMessage(ChatMessage chatMessage) async {
     isGeminiTyping = true;
     setState(() {
@@ -113,10 +153,12 @@ class _HomePageState extends State<HomePage> {
       //code to send message to the chatbot
       String question = chatMessage.text;
 
-      //List of images;
+      //List to store image data as bytes
       List<Uint8List>? images;
 
+      //Check if the chat message contains any media attachments
       if (chatMessage.medias?.isNotEmpty ?? false) {
+        //If media exists, read the first image file and convert to bytes
         images = [
           File(chatMessage.medias!.first.url).readAsBytesSync(),
         ];
@@ -148,7 +190,7 @@ class _HomePageState extends State<HomePage> {
         }
       });
     } catch (e) {
-      print(e);
+      print('failed to send message: $e');
     }
   }
 
@@ -169,6 +211,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  //custom widget to show a loading circular bar is message from gemini is loading
   Widget _typingIndicator() {
     return Container(
       padding: const EdgeInsets.all(10),
